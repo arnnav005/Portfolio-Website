@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('contactForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+        emailjs.sendForm('service_e0ug0wg', 'template_dj6jeec', this)
             .then(function() {
                 document.getElementById('formStatus').innerText = "Message sent successfully!";
             }, function(error) {
@@ -151,3 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 });
+
+<!-- Add this in your <head> or before your script.js -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS user ID
+  })();
+</script>
