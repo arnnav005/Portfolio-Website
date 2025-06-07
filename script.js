@@ -152,10 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-<!-- Add this in your <head> or before your script.js -->
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script>
-  (function(){
-    emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS user ID
-  })();
-</script>
+// To use EmailJS, ensure you include the following in your HTML file, not in this JS file:
+// <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+// <script>
+//   (function(){
+//     emailjs.init("YOUR_USER_ID"); // Replace with your EmailJS user ID
+//   })();
+// </script>
