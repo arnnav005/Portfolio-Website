@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Smooth scrolling for navigation links
+    // EmailJS Init
+    emailjs.init("5__FfUE1mSlcRnTxA");
+
+    // Smooth scrolling for nav links
     document.querySelectorAll('.nav-links a').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+
             if (document.querySelector('.nav-links').classList.contains('active')) {
                 document.querySelector('.nav-links').classList.remove('active');
                 document.querySelector('.hamburger').classList.remove('active');
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Hamburger menu functionality
+    // Hamburger toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
     hamburger.addEventListener('click', () => {
@@ -21,10 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
         hamburger.classList.toggle('active');
     });
 
-    // Animate floating elements in Hero Section
+    // Floating animation dots
     const floatingElementsContainer = document.querySelector('.floating-elements');
     const numElements = 50;
-
     for (let i = 0; i < numElements; i++) {
         const element = document.createElement('div');
         element.classList.add('floating-element');
@@ -38,67 +39,45 @@ document.addEventListener('DOMContentLoaded', () => {
         floatingElementsContainer.appendChild(element);
     }
 
-    // Intersection Observer for fade-in animations on sections
+    // Section fade-in animation
     const faders = document.querySelectorAll('section');
-    const appearOptions = {
-        threshold: 0.2,
-        rootMargin: "0px 0px -50px 0px"
-    };
-
-    const appearOnScroll = new IntersectionObserver(function (entries, appearOnScroll) {
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add('fade-in');
-            appearOnScroll.unobserve(entry.target);
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in');
+                observer.unobserve(entry.target);
+            }
         });
-    }, appearOptions);
+    }, { threshold: 0.2, rootMargin: "0px 0px -50px 0px" });
 
-    faders.forEach(fader => {
-        appearOnScroll.observe(fader);
-    });
+    faders.forEach(fader => appearOnScroll.observe(fader));
 
-    // EmailJS Setup
+    // Contact Form with EmailJS
     const contactForm = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
 
     if (contactForm) {
-        if (typeof emailjs === 'undefined') {
-            console.warn("EmailJS SDK not loaded. Make sure to include it in your HTML.");
-            window.emailjs = {
-                sendForm: (serviceId, templateId, form, userId) => {
-                    return new Promise((resolve, reject) => {
-                        console.log("Mock EmailJS.sendForm:", { serviceId, templateId, form, userId });
-                        setTimeout(() => {
-                            Math.random() > 0.1 ? resolve({ status: 200 }) : reject({ status: 500 });
-                        }, 1000);
-                    });
-                }
-            };
-        } else {
-            // Initialize with your Public Key
-            emailjs.init("5__FfUE1mSlcRnTxA");
-        }
-
         contactForm.addEventListener('submit', function (event) {
             event.preventDefault();
+
+            const submitBtn = contactForm.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
 
             formStatus.style.display = 'none';
             formStatus.classList.remove('success', 'error');
             formStatus.textContent = '';
 
-            const submitBtn = this.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-
             emailjs.sendForm('service_e0ug0wg', 'template_dj6jeec', this)
                 .then(() => {
-                    formStatus.textContent = 'Thank you for reaching out to me, I will reply soon.';
+                    formStatus.textContent = '✅ Thank you! Your message has been sent.';
                     formStatus.classList.add('success');
                     formStatus.style.display = 'block';
                     contactForm.reset();
-                }, (error) => {
-                    console.error('EmailJS Failed:', error);
-                    formStatus.textContent = 'Failed to send message. Please try again later.';
+                })
+                .catch((error) => {
+                    console.error('EmailJS error:', error);
+                    formStatus.textContent = '❌ Failed to send. Please try again.';
                     formStatus.classList.add('error');
                     formStatus.style.display = 'block';
                 })
