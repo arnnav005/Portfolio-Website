@@ -139,4 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
     }
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+            .then(function() {
+                document.getElementById('formStatus').innerText = "Message sent successfully!";
+            }, function(error) {
+                document.getElementById('formStatus').innerText = "Failed to send message. Please try again.";
+                console.error('EmailJS error:', error);
+            });
+    });
 });
