@@ -66,15 +66,42 @@ document.addEventListener('DOMContentLoaded', () => {
         appearOnScroll.observe(fader);
     });
 
-    // Initialize EmailJS with your Public Key
-    // Make sure you have this script tag in your HTML:
-    // <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    emailjs.init("5__FfUE1mSlcRnTxA"); // YOUR PUBLIC KEY GOES HERE
+    // Initialize EmailJS (Add your EmailJS Public Key here)
+    // You'll need to link the EmailJS SDK in your HTML first:
+    // <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+    // emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your actual User ID
 
     const contactForm = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
 
     if (contactForm) {
+        // You'll need to include the EmailJS SDK in your HTML file for this to work:
+        // <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+        // And then initialize it with your Public Key:
+        // emailjs.init("YOUR_PUBLIC_KEY"); 
+        
+        // Mock EmailJS for local testing if SDK is not present or not initialized
+        // In a real deployment, ensure emailjs.init("YOUR_PUBLIC_KEY") is called correctly.
+        if (typeof emailjs === 'undefined') {
+            console.warn("EmailJS SDK not loaded. Form submission will be mocked. Ensure you add the EmailJS SDK script and call emailjs.init() with your Public Key.");
+            window.emailjs = {
+                sendForm: (serviceId, templateId, form, userId) => {
+                    return new Promise((resolve, reject) => {
+                        console.log("Mock EmailJS.sendForm called:", { serviceId, templateId, form, userId });
+                        // Simulate network delay
+                        setTimeout(() => {
+                            if (Math.random() > 0.1) { // 90% success rate
+                                resolve({ status: 200, text: 'OK' });
+                            } else {
+                                reject({ status: 500, text: 'Error' });
+                            }
+                        }, 1000);
+                    });
+                }
+            };
+        }
+
+
         contactForm.addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission
 
@@ -86,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.disabled = true; // Disable button to prevent multiple submissions
             submitBtn.textContent = 'Sending...'; // Change button text
 
-            // Use your provided Service ID and Template ID
-            emailjs.sendForm('service_e0ug0wg', 'template_dj6jeec', this)
+            // Replace 'YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID' with your actual EmailJS IDs
+            // Replace 'YOUR_PUBLIC_KEY' with your actual EmailJS Public Key if not initialized globally
+            emailjs.sendForm('service_XXXXX', 'template_XXXXX', this) // Use 'this' to refer to the form
                 .then(() => {
                     formStatus.textContent = 'Thank you for reaching out to me, I will reply soon.';
                     formStatus.classList.add('success');
@@ -111,4 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         });
     }
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        emailjs.sendForm('service_e0ug0wg', 'template_dj6jeec', this)
+            .then(function() {
+                document.getElementById('formStatus').innerText = "Message sent successfully!";
+            }, function(error) {
+                document.getElementById('formStatus').innerText = "Failed to send message. Please try again.";
+                console.error('EmailJS error:', error);
+            });
+    });
 });
