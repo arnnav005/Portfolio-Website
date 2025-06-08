@@ -52,19 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     faders.forEach(fader => appearOnScroll.observe(fader));
 
-    // Contact Form with EmailJS
-    function sendEmail() {
-        const templateParams = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            message: document.getElementById('message').value
-        };
+    // Contact form submission status message
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        var form = this;
+        var status = document.getElementById('formStatus');
+        form.addEventListener('reset', function() {
+            status.textContent = "Thank you for reaching out! I'll reply soon.";
+            status.className = "success";
+        });
+    });
+});
 
-        emailjs.send('service_e0ug0wg', 'template_dj6jeec', templateParams)
-            .then(() => {
-                alert('Your message has been sent successfully!');
-            }, (error) => {
-                alert('Failed to send your message. Please try again later.');
-                console.error('EmailJS error:', error);
-            });
-    }
