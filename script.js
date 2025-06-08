@@ -53,43 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
     faders.forEach(fader => appearOnScroll.observe(fader));
 
     // Contact Form with EmailJS
-    const contactForm = document.getElementById('contactForm');
-    const formStatus = document.getElementById('formStatus');
+    function sendEmail() {
+        const templateParams = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            message: document.getElementById('message').value
+        };
 
-    if (contactForm) {
-        contactForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            const submitBtn = contactForm.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-
-            formStatus.style.display = 'none';
-            formStatus.classList.remove('success', 'error');
-            formStatus.textContent = '';
-
-            emailjs.sendForm('service_e0ug0wg', 'template_dj6jeec', this)
-                .then(() => {
-                    formStatus.textContent = '✅ Thank you! Your message has been sent.';
-                    formStatus.classList.add('success');
-                    formStatus.style.display = 'block';
-                    contactForm.reset();
-                })
-                .catch((error) => {
-                    console.error('EmailJS error:', error);
-                    formStatus.textContent = '❌ Failed to send. Please try again.';
-                    formStatus.classList.add('error');
-                    formStatus.style.display = 'block';
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Send Message';
-                    setTimeout(() => {
-                        formStatus.style.display = 'none';
-                        formStatus.textContent = '';
-                        formStatus.classList.remove('success', 'error');
-                    }, 5000);
-                });
-        });
+        emailjs.send('service_e0ug0wg', 'template_dj6jeec', templateParams)
+            .then(() => {
+                alert('Your message has been sent successfully!');
+            }, (error) => {
+                alert('Failed to send your message. Please try again later.');
+                console.error('EmailJS error:', error);
+            });
     }
-});
